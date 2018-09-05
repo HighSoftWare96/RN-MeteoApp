@@ -7,7 +7,8 @@ import {
     Text,
     ImageBackground,
     Image,
-    StatusBar
+    StatusBar,
+    Alert
 } from 'react-native';
 import CityData from '../components/CityData';
 import SingleDayWeather from './../components/SingleDayWeather';
@@ -15,76 +16,76 @@ import WeatherApiManager from './../services/WeatherApiManager';
 
 class MeteoScreen extends React.Component {
 
-        static navigationOptions = {
-            header: null,
-        };
+    static navigationOptions = {
+        header: null,
+    };
 
-        constructor(props) {
-            super(props);
-            this.state = {
-                geoData: this.props.navigation.getParam('geoData'),
-                loading: true,
-                notFound: false,
-                error: false,
-                cityName: this.props.navigation.getParam('city'),
-                countryID: this.props.navigation.getParam('country'),
-                meteoData: {
-                    list: [],
-                },
-                dataSource: new ListView.DataSource({
-                    rowHasChanged: (r1, r2) => r1 !== r2
-                }),
-            }
+    constructor(props) {
+        super(props);
+        this.state = {
+            geoData: this.props.navigation.getParam('geoData'),
+            loading: true,
+            notFound: false,
+            error: false,
+            cityName: this.props.navigation.getParam('city'),
+            countryID: this.props.navigation.getParam('country'),
+            meteoData: {
+                list: [],
+            },
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (r1, r2) => r1 !== r2
+            }),
         }
+    }
 
-        componentDidMount() {
-            if(this.state.geoData.searchingByPosition) {
-                WeatherApiManager.fetchWeatherDataByCoords(this.state.geoData.lat, this.state.geoData.lon)
-                    .then(jsonData => {
-                        console.log(jsonData);
+    componentDidMount() {
+        if(this.state.geoData.searchingByPosition) {
+            WeatherApiManager.fetchWeatherDataByCoords(this.state.geoData.lat, this.state.geoData.lon)
+                .then(jsonData => {
+                    console.log(jsonData);
+                    this.setState(pv => {
+                        return {
+                            geoData: pv.geoData,
+                            loading: false,
+                            notFound: false,
+                            error: false,
+                            cityName: jsonData.city.name,
+                            countryID:  jsonData.city.country,
+                            meteoData: jsonData,
+                            dataSource: pv.dataSource.cloneWithRows(jsonData.list)
+                        };
+                    });
+                })
+                .catch(err => {
+                    if (err.status == 404) {
+                        this.setState(pv => {
+                            return {
+                                geoData: pv.geoData,
+                                loading: false,
+                                notFound: true,
+                                error: false,
+                                cityName: jsonData.city.name,
+                                countryID:  jsonData.city.country,
+                                meteoData: pv.meteoData,
+                                dataSource: pv.dataSource
+                            };
+                        });
+                    } else {
                         this.setState(pv => {
                             return {
                                 geoData: pv.geoData,
                                 loading: false,
                                 notFound: false,
-                                error: false,
+                                error: true,
                                 cityName: jsonData.city.name,
                                 countryID:  jsonData.city.country,
-                                meteoData: jsonData,
-                                dataSource: pv.dataSource.cloneWithRows(jsonData.list)
+                                meteoData: pv.meteoData,
+                                dataSource: pv.dataSource
                             };
                         });
-                    })
-                    .catch(err => {
-                        if (err.status == 404) {
-                            this.setState(pv => {
-                                return {
-                                    geoData: pv.geoData,
-                                    loading: false,
-                                    notFound: true,
-                                    error: false,
-                                    cityName: jsonData.city.name,
-                                    countryID:  jsonData.city.country,
-                                    meteoData: pv.meteoData,
-                                    dataSource: pv.dataSource
-                                };
-                            });
-                        } else {
-                            this.setState(pv => {
-                                return {
-                                    geoData: pv.geoData,
-                                    loading: false,
-                                    notFound: false,
-                                    error: true,
-                                    cityName: jsonData.city.name,
-                                    countryID:  jsonData.city.country,
-                                    meteoData: pv.meteoData,
-                                    dataSource: pv.dataSource
-                                };
-                            });
-                            console.log(err);
-                        }
-                    });
+                        console.log(err);
+                    }
+                });
             } else {
             WeatherApiManager.getWeatherByCityName(this.state.cityName, this.state.countryID).then(jsonData => {
                     console.log(jsonData);
@@ -134,6 +135,10 @@ class MeteoScreen extends React.Component {
         }
     }
 
+    showMeteoDetails = (meteoData) => {
+        // TODO:
+    }
+
     render() {
         if(this.state.loading) {
             return (<View style={styles.container}>
@@ -169,9 +174,10 @@ class MeteoScreen extends React.Component {
               />
             <CityData jsondata={this.state.meteoData}></CityData>
             <ListView style={styles.list} dataSource={this.state.dataSource}
-            renderRow={(item) => <SingleDayWeather weatherData={item}/>}/>
+            renderRow={(item) => <SingleDayWeather onPress={this.showMeteoDetails} weatherData={item}/>}/>
         </View>
         );
+        // TODO: devo fare in modo di passare item all'interno di showMeteoDetails altrimenti perdo il riferimento all'oggetto.. oppure gestisco la cosa all'interno di singledayweather
     }
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, Image, ImageBackground, TouchableNativeFeedback } from 'react-native';
 import IconWithText from './IconWithText';
 import FontAwesome, { Icons } from 'react-native-fontawesome'
 import ImagesManager from './../services/ImagesManager';
@@ -39,25 +39,27 @@ class SingleDayWeather extends React.Component {
     render() {
         const weatherData = this.props.weatherData;
         return (
-        <ImageBackground source={ImagesManager.getWeatherBackground(weatherData.weather[0].id)} style={styles.container}>
-            <View style={styles.containerTemp}>
-                <View style={styles.currentTempContainer}>
-                    <FontAwesome style={styles.tempIcon}>{Icons.thermometer}</FontAwesome>
-                    <Text style={styles.temp}>{weatherData.main.temp}°C</Text>
+        <TouchableNativeFeedback onPress={this.props.onPress}>
+            <ImageBackground style={styles.container} source={ImagesManager.getWeatherBackground(weatherData.weather[0].id)}>
+                <View style={styles.containerTemp}>
+                    <View style={styles.currentTempContainer}>
+                        <FontAwesome style={styles.tempIcon}>{Icons.thermometer}</FontAwesome>
+                        <Text style={styles.temp}>{weatherData.main.temp}°C</Text>
+                    </View>
+                    <View style={styles.minmaxcontainer}>
+                        <IconWithText icon={Icons.arrowDown} text={weatherData.main.temp_min + '°C'}/>
+                        <IconWithText icon={Icons.arrowUp} text={weatherData.main.temp_max + '°C'}/>
+                    </View>
                 </View>
-                <View style={styles.minmaxcontainer}>
-                    <IconWithText icon={Icons.arrowDown} text={weatherData.main.temp_min + '°C'}/>
-                    <IconWithText icon={Icons.arrowUp} text={weatherData.main.temp_max + '°C'}/>
+                <View style={styles.dateContainer}>
+                    <Text style={styles.dateText}>{this.printDate(weatherData.dt)}</Text>
+                    <View style={styles.weatherDesc}>
+                        <Text style={styles.weatherDescText}>{weatherData.weather[0].description}</Text>
+                        <Image style={styles.weatherImage} source={ImagesManager.getWeatherIcon(weatherData.weather[0].icon)}></Image>
+                    </View>
                 </View>
-            </View>
-            <View style={styles.dateContainer}>
-                <Text style={styles.dateText}>{this.printDate(weatherData.dt)}</Text>
-                <View style={styles.weatherDesc}>
-                    <Text style={styles.weatherDescText}>{weatherData.weather[0].description}</Text>
-                    <Image style={styles.weatherImage} source={ImagesManager.getWeatherIcon(weatherData.weather[0].icon)}></Image>
-                </View>
-            </View>
-        </ImageBackground>
+            </ImageBackground>
+        </TouchableNativeFeedback>
         );
     }
 
