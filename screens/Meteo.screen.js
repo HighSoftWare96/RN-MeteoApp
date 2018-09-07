@@ -136,7 +136,7 @@ class MeteoScreen extends React.Component {
     }
 
     showMeteoDetails = (meteoData) => {
-        // TODO:
+        this.props.navigation.navigate('Details', {data: meteoData});
     }
 
     render() {
@@ -174,10 +174,11 @@ class MeteoScreen extends React.Component {
               />
             <CityData jsondata={this.state.meteoData}></CityData>
             <ListView style={styles.list} dataSource={this.state.dataSource}
-            renderRow={(item) => <SingleDayWeather onPress={this.showMeteoDetails} weatherData={item}/>}/>
+            renderRow={(item) => <SingleDayWeather onPress={() => { return this.showMeteoDetails(item) }} weatherData={item}/>}/>
         </View>
         );
-        // TODO: devo fare in modo di passare item all'interno di showMeteoDetails altrimenti perdo il riferimento all'oggetto.. oppure gestisco la cosa all'interno di singledayweather
+        // NOTE: interessante il passaggio sopra: passo una funzione con un argomento già inizializzato
+        // wrappando la funzione all'interno di un'altra funzione.
     }
 };
 

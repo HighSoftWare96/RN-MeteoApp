@@ -4,6 +4,7 @@ import {
 import HomeScreen from './screens/Home.screen';
 import MeteoScreen from './screens/Meteo.screen';
 import {fromTop} from 'react-navigation-transitions'
+import MeteoDetailsScreen from './screens/Details.screen';
 
 const App = createStackNavigator({
   Home: {
@@ -12,6 +13,9 @@ const App = createStackNavigator({
   Meteo: {
     screen: MeteoScreen
   },
+  Details: {
+    screen: MeteoDetailsScreen
+  }
 }, {
   initialRouteName: 'Home',
   transitionConfig: () => fromTop(),

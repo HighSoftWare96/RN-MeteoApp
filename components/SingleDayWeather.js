@@ -3,37 +3,12 @@ import { StyleSheet, View, Text, Image, ImageBackground, TouchableNativeFeedback
 import IconWithText from './IconWithText';
 import FontAwesome, { Icons } from 'react-native-fontawesome'
 import ImagesManager from './../services/ImagesManager';
+import WeatherApiManager from './../services/WeatherApiManager';
 
 class SingleDayWeather extends React.Component {
     constructor(props) {
         super(props);
         
-    }
-
-    printDate(utc) {
-        let resultString = '';
-        let date = new Date(utc*1000);
-
-        let tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        if(date.getDate() == new Date().getDate()) {
-            resultString += 'Today, ';
-        } else if(date.getDate() == tomorrow.getDate()){
-            resultString += 'Tomorrow, ';
-        } else {
-            resultString += this.toStringWithTwoZero(date.getMonth()) + '/' + this.toStringWithTwoZero(date.getDate()) + '/' + date.getFullYear() + ', '; 
-        }
-        resultString += this.toStringWithTwoZero(date.getHours()) + ':' + this.toStringWithTwoZero(date.getMinutes());
-        return resultString;
-    }
-
-    toStringWithTwoZero(number) {
-        if(number <= 9) {
-            return '0' + number; 
-        } else {
-            return number.toString();
-        }
     }
 
     render() {
@@ -52,7 +27,7 @@ class SingleDayWeather extends React.Component {
                     </View>
                 </View>
                 <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>{this.printDate(weatherData.dt)}</Text>
+                    <Text style={styles.dateText}>{WeatherApiManager.convertFromUTCToHumanDate(weatherData.dt)}</Text>
                     <View style={styles.weatherDesc}>
                         <Text style={styles.weatherDescText}>{weatherData.weather[0].description}</Text>
                         <Image style={styles.weatherImage} source={ImagesManager.getWeatherIcon(weatherData.weather[0].icon)}></Image>
@@ -132,5 +107,9 @@ const styles = StyleSheet.create({
     },
     weatherDescText: {
         paddingRight: 5,
+    },
+    weatherImage: {
+        width: 40,
+        height: 40
     }
 });

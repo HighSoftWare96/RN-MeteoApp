@@ -22,8 +22,8 @@ class HomeScreen extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        city: '',
-        country: '',
+        city: 'Milano',
+        country: 'IT',
         loadingPosition: false,
         geoData: {
           searchingByPosition: false,
